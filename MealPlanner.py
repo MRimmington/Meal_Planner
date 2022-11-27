@@ -10,7 +10,7 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 import random
-import os
+#import os
 import pdfkit
 
 def generatePlan(sun,mon,tue,wed,thu,fri,sat):
@@ -77,7 +77,7 @@ def generatePlan(sun,mon,tue,wed,thu,fri,sat):
     
     # HTML
     
-    os.chdir('/Users/maxrimmington/documents/programming/mealplannerapp/templates')
+    #os.chdir('/Users/maxrimmington/documents/programming/mealplannerapp/templates')
     
     f = open('index.html','w')
     
@@ -262,7 +262,7 @@ def generatePlan(sun,mon,tue,wed,thu,fri,sat):
     f.write(html_string)
     f.close()
     
-    os.chdir('/Users/maxrimmington/documents/programming/mealplannerapp')
+    #os.chdir('/Users/maxrimmington/documents/programming/mealplannerapp')
 
 def update():
     url = 'https://www.makegoodfood.ca/en/recipes'
