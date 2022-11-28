@@ -12,66 +12,6 @@ from bs4 import BeautifulSoup
 import random
 import pdfkit
 
-def generatePlan(sun,mon,tue,wed,thu,fri,sat):
-    sun = sun.lower()
-    mon = mon.lower()
-    tue = tue.lower()
-    wed = wed.lower()
-    thu = thu.lower()
-    fri = fri.lower()
-    sat = sat.lower()    
-    
-    recipes = pd.read_excel("recipe_archive.xlsx")
-    Protein = []
-    for i in recipes.Protien:
-        if i == 'pancetta':
-            Protein.append('pork')
-        elif i in ['haddock','salmon','shrimp','cod']:
-            Protein.append('fish')
-        elif i == 'vegetarian':
-            Protein.append('veg')
-        else:
-            Protein.append(i)
-    recipes['Protein'] = Protein
-    l1 = [sun,mon,tue,wed,thu,fri,sat]
-    l2 = []
-    for i in range(7):
-        j = l1[i]
-        if l1[i] == 'i do not need a recipe for this day':
-            l2.append('You have not requested a recipe for today.')
-        else:
-            l2.append(random.choice(list(recipes[recipes['Protein'] == j]['Recipe'])))
-
-    ing2 = []
-    link = []
-    for i in l2:
-        if i == 'You have not requested a recipe for today.':
-            k = ""
-            l = ""
-        else:
-            j = (list(recipes['Recipe']).index(i))
-            k = recipes.Link[j]
-            l = recipes.Ingredients[j].replace("[",'').replace("]",'').replace("'","").split(", ")
-            for p in l:
-                if ' spice' in p:
-                    n = (l.index(p))
-                    l = l[:n]
-                else:
-                    l = l
-        link.append(k)
-        ing2.append(l)
-        
-        ing3 = []
-        for i in ing2:
-            ing3.append(str(i).replace("['","").replace("']","<br>").replace("', '","<br>"))
-        
-    ing4 = []
-    for i in ing2:
-        for j in i:
-            ing4.append(j)
-    
-    ing4 = pd.DataFrame({'Ingredients':ing4})
-
 def update():
     url = 'https://www.makegoodfood.ca/en/recipes'
     res = requests.get(url)
@@ -288,19 +228,79 @@ def my_form_post():
             sat = 'veg'
         else:
             sat = request.form['sat']
+
+        sun = sun.lower()
+        mon = mon.lower()
+        tue = tue.lower()
+        wed = wed.lower()
+        thu = thu.lower()
+        fri = fri.lower()
+        sat = sat.lower()    
         
-        generatePlan(sun,mon,tue,wed,thu,fri,sat)
+        recipes = pd.read_excel("recipe_archive.xlsx")
+        Protein = []
+        for i in recipes.Protien:
+            if i == 'pancetta':
+                Protein.append('pork')
+            elif i in ['haddock','salmon','shrimp','cod']:
+                Protein.append('fish')
+            elif i == 'vegetarian':
+                Protein.append('veg')
+            else:
+                Protein.append(i)
+        recipes['Protein'] = Protein
+        l1 = [sun,mon,tue,wed,thu,fri,sat]
+        l2 = []
+        for i in range(7):
+            j = l1[i]
+            if l1[i] == 'i do not need a recipe for this day':
+                l2.append('You have not requested a recipe for today.')
+            else:
+                l2.append(random.choice(list(recipes[recipes['Protein'] == j]['Recipe'])))
+
+        ing2 = []
+        link = []
+        for i in l2:
+            if i == 'You have not requested a recipe for today.':
+                k = ""
+                l = ""
+            else:
+                j = (list(recipes['Recipe']).index(i))
+                k = recipes.Link[j]
+                l = recipes.Ingredients[j].replace("[",'').replace("]",'').replace("'","").split(", ")
+                for p in l:
+                    if ' spice' in p:
+                        n = (l.index(p))
+                        l = l[:n]
+                    else:
+                        l = l
+            link.append(k)
+            ing2.append(l)
+            
+            ing3 = []
+            for i in ing2:
+                ing3.append(str(i).replace("['","").replace("']","<br>").replace("', '","<br>"))
+            
+        ing4 = []
+        for i in ing2:
+            for j in i:
+                ing4.append(j)
+        
+        ing4 = pd.DataFrame({'Ingredients':ing4})
         
         update()
         
-        return render_template('index.html', sun_meal = str(l2[0]), sun_ing = str(ing3[0]), sun_link = "'" + str(link[0]) + "'", mon_meal = str(l2[1]), mon_ing = str(ing3[1]), mon_link = "'" + str(link[1]) + "'", tue_meal = str(l2[2]), tue_ing = str(ing3[2]), tue_link = "'" + str(link[2]) + "'", wed_meal = str(l2[3]), wed_ing = str(ing3[3]), wed_link = "'" + str(link[3]) + "'", thu_meal = str(l2[4]), thu_ing = str(ing3[4]), thu_link = "'" + str(link[4]) + "'", fri_meal = str(l2[5]), fri_ing = str(ing3[5]), fri_link = "'" + str(link[5]) + "'", sat_meal = str(l2[6]), sat_ing = str(ing3[6]), sat_link = "'" + str(link[6]) + "'")
+        return render_template('index.html', 
+            sun_meal = str(l2[0]), sun_ing = str(ing3[0]), sun_link = str(link[0]), 
+            mon_meal = str(l2[1]), mon_ing = str(ing3[1]), mon_link = str(link[1]),
+            tue_meal = str(l2[2]), tue_ing = str(ing3[2]), tue_link = str(link[2]),
+            wed_meal = str(l2[3]), wed_ing = str(ing3[3]), wed_link = str(link[3]),
+            thu_meal = str(l2[4]), thu_ing = str(ing3[4]), thu_link = str(link[4]), 
+            fri_meal = str(l2[5]), fri_ing = str(ing3[5]), fri_link = str(link[5]), 
+            sat_meal = str(l2[6]), sat_ing = str(ing3[6]), sat_link = str(link[6]))
         
     else:
         return 'Error'
-
-#@app.route('/close')
-#def plan():
-    #return render_template('index.html')
     
 if __name__ == '__main__':
   app.run(debug=True) 
