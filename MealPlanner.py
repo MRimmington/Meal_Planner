@@ -10,7 +10,6 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 import random
-#import os
 import pdfkit
 
 def generatePlan(sun,mon,tue,wed,thu,fri,sat):
@@ -72,197 +71,6 @@ def generatePlan(sun,mon,tue,wed,thu,fri,sat):
             ing4.append(j)
     
     ing4 = pd.DataFrame({'Ingredients':ing4})
-    
-    ing4.to_csv('Grocery_List.csv', index = False)
-    
-    # HTML
-    
-    #os.chdir('/Users/maxrimmington/documents/programming/mealplannerapp/templates')
-    
-    f = open('index.html','w')
-    
-    m1 = """<!DOCTYPE html>
-    <html><meta charset="utf-8" />
-    	<head>
-    		<title>Weekly Mean Plan</title>
-    		<style>
-    			.button {
-    				height: 75px;
-    				width: 150px;  				
-    				background-color: red;
-      				border: none;
-      				color: white;
-      				padding: 20px;
-      				text-align: center;
-      				text-decoration: none;
-      				display: inline-block;
-      				font-size: 16px;
-      				margin: 4px 4px;
-    				}
-    		</style>
-    	</head>
-    	<body>
-    		<table class="table table_main" border="5">
-     			<tr>
-      			 	<td>Sunday</td>
-      			 	<td>&nbsp;
-    					<table class="table table1">
-    						<tr>
-    							<th><h3>"""
-    m2 = str(l2[0])
-    m3 = """</h3></th>
-    						</tr>
-    						<tr>
-    							<td>"""
-    m4 = str(ing3[0])
-    m5 = """</td>
-    						</tr>
-    					</table>
-                        <a href="""
-    m6 = "'" + str(link[0]) + "'"
-    m7 = """><strong>View Recipe</strong></a>
-                    </td>
-     			</tr>
-     			<tr>
-      			 	<td>Monday</td>
-      			 	<td>&nbsp;
-    					<table class="table table1">
-    						<tr>
-    							<th><h3>"""
-    m8 = str(l2[1])
-    m9 = """</h3></th>
-    						</tr>
-    						<tr>
-    							<td>"""
-    m10 = str(ing3[1])
-    m11 = """</td>
-    						</tr>
-    					</table>
-                        <a href="""
-    m12 = "'" + str(link[1]) + "'"
-    m13 = """><strong>View Recipe</strong></a>
-                    </td>
-     			</tr>
-                 <tr>
-      			 	<td>Tuesday</td>
-      			 	<td>&nbsp;
-    					<table class="table table1">
-    						<tr>
-    							<th><h3>"""
-    m14 = str(l2[2])
-    m15 = """</h3></th>
-    						</tr>
-    						<tr>
-    							<td>"""
-    m16 = str(ing3[2])
-    m17 = """</td>
-    						</tr>
-    					</table>
-                        <a href="""
-    m18 = "'" + str(link[2]) + "'"
-    m19 = """><strong>View Recipe</strong></a>
-                    </td>
-     			</tr>
-                 <tr>
-      			 	<td>Wednesday</td>
-      			 	<td>&nbsp;
-    					<table class="table table1">
-    						<tr>
-    							<th><h3>"""
-    m20 = str(l2[3])
-    m21 = """</h3></th>
-    						</tr>
-    						<tr>
-    							<td>"""
-    m22 = str(ing3[3])
-    m23 = """</td>
-    						</tr>
-    					</table>
-                        <a href="""
-    m24 = "'" + str(link[3]) + "'"
-    m25 = """><strong>View Recipe</strong></a>
-                    </td>
-     			</tr>
-                 <tr>
-      			 	<td>Thursday</td>
-      			 	<td>&nbsp;
-    					<table class="table table1">
-    						<tr>
-    							<th><h3>"""
-    m26 = str(l2[4])
-    m27 = """</h3></th>
-    						</tr>
-    						<tr>
-    							<td>"""
-    m28 = str(ing3[4])
-    m29 = """</td>
-    						</tr>
-    					</table>
-                        <a href="""
-    m30 = "'" + str(link[4]) + "'"
-    m31 = """><strong>View Recipe</strong></a>
-                    </td>
-     			</tr>
-                 <tr>
-      			 	<td>Friday</td>
-      			 	<td>&nbsp;
-    					<table class="table table1">
-    						<tr>
-    							<th><h3>"""
-    m32 = str(l2[5])
-    m33 = """</h3></th>
-    						</tr>
-    						<tr>
-    							<td>"""
-    m34 = str(ing3[5])
-    m35 = """</td>
-    						</tr>
-    					</table>
-                        <a href="""
-    m36 = "'" + str(link[5]) + "'"
-    m37 = """><strong>View Recipe</strong></a>
-                    </td>
-     			</tr>
-                 <tr>
-      			 	<td>Saturday</td>
-      			 	<td>&nbsp;
-    					<table class="table table1">
-    						<tr>
-    							<th><h3>"""
-    m38 = str(l2[6])
-    m39 = """</h3></th>
-    						</tr>
-    						<tr>
-    							<td>"""
-    m40 = str(ing3[6])
-    m41 = """</td>
-    						</tr>
-    					</table>
-                        <a href="""
-    m42 = "'" + str(link[6]) + "'"
-    m43 = """><strong>View Recipe</strong></a>
-                    </td>
-     			</tr>
-    		</table>
-    	</body>
-    </html>"""
-    
-    g = [m1,m2,m3,m4,m5,m6,m7,m8,m9,m10,m11,m12,m13,m14,m15,m16,m17,m18,m19,m20,m21,m22,m23,m24,m25,m26,m27,m28,m29,m30,m31,m32,m33,m34,m35,m36,m37,m38,m39,m40,m41,m42,m43]
-    
-    for i in g:
-        f.write(i)
-    f.close()
-
-    with open('index.html', 'r') as f: 
-        html_string = f.read()
-    
-    html_string.replace("<a>'","<a>").replace("'</a>","</a>")
-    
-    f = open('index.html','w')
-    f.write(html_string)
-    f.close()
-    
-    #os.chdir('/Users/maxrimmington/documents/programming/mealplannerapp')
 
 def update():
     url = 'https://www.makegoodfood.ca/en/recipes'
@@ -485,14 +293,14 @@ def my_form_post():
         
         update()
         
-        return render_template('index.html')
+        return render_template('index.html', sun_meal = str(l2[0]), sun_ing = str(ing3[0]), sun_link = "'" + str(link[0]) + "'", mon_meal = str(l2[1]), mon_ing = str(ing3[1]), mon_link = "'" + str(link[1]) + "'", tue_meal = str(l2[2]), tue_ing = str(ing3[2]), tue_link = "'" + str(link[2]) + "'", wed_meal = str(l2[3]), wed_ing = str(ing3[3]), wed_link = "'" + str(link[3]) + "'", thu_meal = str(l2[4]), thu_ing = str(ing3[4]), thu_link = "'" + str(link[4]) + "'", fri_meal = str(l2[5]), fri_ing = str(ing3[5]), fri_link = "'" + str(link[5]) + "'", sat_meal = str(l2[6]), sat_ing = str(ing3[6]), sat_link = "'" + str(link[6]) + "'")
         
     else:
         return 'Error'
 
-@app.route('/close')
-def plan():
-    return render_template('index.html')
+#@app.route('/close')
+#def plan():
+    #return render_template('index.html')
     
 if __name__ == '__main__':
   app.run(debug=True) 
