@@ -276,10 +276,10 @@ def email(email1, email2):
         				}
         		</style>')''','')
     
-    username = "montepythonscript@gmail.com"
-    password = "iqvgjvcgiizjsjfp"
+    username = "${{ secrets.EMAIL_ADDRESS }}"
+    password = "${{ secrets.EMAIL_PASSWORD }}"
     smtp_server = "smtp.gmail.com:587"
-    email_from = "montepythonscript@gmail.com"
+    email_from = "${{ secrets.EMAIL_ADDRESS }}"
     
     msg = MIMEMultipart('alternative')
     msg['Subject'] = "This Week's Meal Plan"
