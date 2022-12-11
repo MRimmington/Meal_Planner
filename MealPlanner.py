@@ -1,17 +1,323 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Oct 22 22:06:34 2022
-
-@author: Max
-"""
-
 from flask import Flask, request, render_template
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
 import random
-import pdfkit
 
+def generatePlan(sun,mon,tue,wed,thu,fri,sat):
+    sun = sun.lower()
+    mon = mon.lower()
+    tue = tue.lower()
+    wed = wed.lower()
+    thu = thu.lower()
+    fri = fri.lower()
+    sat = sat.lower()    
+    
+    recipes = pd.read_excel("recipe_archive.xlsx")
+    Protein = []
+    for i in recipes.Protien:
+        if i == 'pancetta':
+            Protein.append('pork')
+        elif i in ['haddock','salmon','shrimp','cod']:
+            Protein.append('fish')
+        else:
+            Protein.append(i)
+    recipes['Protein'] = Protein
+    l1 = [sun,mon,tue,wed,thu,fri,sat]
+    l2 = []
+    for i in range(7):
+        j = l1[i]
+        if l1[i] == 'i do not need a recipe for this day':
+            l2.append('You have not selected a recipe for today.')
+        else:
+            l2.append(random.choice(list(recipes[recipes['Protein'] == j]['Recipe'])))
+
+    ing2 = []
+    link = []
+    for i in l2:
+        if i == 'You have not selected a recipe for today.':
+            k = ""
+            l = ""
+        else:
+            j = (list(recipes['Recipe']).index(i))
+            k = recipes.Link[j]
+            l = recipes.Ingredients[j].replace("[",'').replace("]",'').replace("'","").split(", ")
+            for p in l:
+                if ' spice' in p:
+                    n = (l.index(p))
+                    l = l[:n]
+                else:
+                    l = l
+        link.append(k)
+        ing2.append(l)
+        
+        ing3 = []
+        for i in ing2:
+            ing3.append(str(i).replace("['","").replace("']","<br>").replace("', '","<br>"))
+        
+    ing4 = []
+    for i in ing2:
+        for j in i:
+            ing4.append(j)
+    
+    ing4 = pd.DataFrame({'Ingredients':ing4})
+    
+    ing4.to_csv('Grocery_List.csv', index = False)
+    
+    # HTML
+    
+    f = open('index_V2.html','w')
+    
+    m1 = """<!DOCTYPE html>
+    <html><meta charset="utf-8" />
+    	<head>
+    		<title>Weekly Mean Plan</title>
+    		<style>
+    			.button {
+    				height: 75px;
+    				width: 150px;  				
+    				background-color: red;
+      				border: none;
+      				color: white;
+      				padding: 20px;
+      				text-align: center;
+      				text-decoration: none;
+      				display: inline-block;
+      				font-size: 16px;
+      				margin: 4px 4px;
+    				}
+    		</style>
+    	</head>
+    	<body>
+    		<table class="table table_main" border="5">
+     			<tr>
+      			 	<td>Sunday</td>
+      			 	<td>&nbsp;
+    					<table class="table table1">
+    						<tr>
+    							<th><h3>"""
+    m2 = str(l2[0])
+    m3 = """</h3></th>
+    						</tr>
+    						<tr>
+    							<td>"""
+    m4 = str(ing3[0])
+    m5 = """</td>
+    						</tr>
+    					</table>
+                        <a href="""
+    m6 = "'" + str(link[0]) + "'"
+    m7 = """><strong>View Recipe</strong></a>
+                    </td>
+     			</tr>
+     			<tr>
+      			 	<td>Monday</td>
+      			 	<td>&nbsp;
+    					<table class="table table1">
+    						<tr>
+    							<th><h3>"""
+    m8 = str(l2[1])
+    m9 = """</h3></th>
+    						</tr>
+    						<tr>
+    							<td>"""
+    m10 = str(ing3[1])
+    m11 = """</td>
+    						</tr>
+    					</table>
+                        <a href="""
+    m12 = "'" + str(link[1]) + "'"
+    m13 = """><strong>View Recipe</strong></a>
+                    </td>
+     			</tr>
+                 <tr>
+      			 	<td>Tuesday</td>
+      			 	<td>&nbsp;
+    					<table class="table table1">
+    						<tr>
+    							<th><h3>"""
+    m14 = str(l2[2])
+    m15 = """</h3></th>
+    						</tr>
+    						<tr>
+    							<td>"""
+    m16 = str(ing3[2])
+    m17 = """</td>
+    						</tr>
+    					</table>
+                        <a href="""
+    m18 = "'" + str(link[2]) + "'"
+    m19 = """><strong>View Recipe</strong></a>
+                    </td>
+     			</tr>
+                 <tr>
+      			 	<td>Wednesday</td>
+      			 	<td>&nbsp;
+    					<table class="table table1">
+    						<tr>
+    							<th><h3>"""
+    m20 = str(l2[3])
+    m21 = """</h3></th>
+    						</tr>
+    						<tr>
+    							<td>"""
+    m22 = str(ing3[3])
+    m23 = """</td>
+    						</tr>
+    					</table>
+                        <a href="""
+    m24 = "'" + str(link[3]) + "'"
+    m25 = """><strong>View Recipe</strong></a>
+                    </td>
+     			</tr>
+                 <tr>
+      			 	<td>Thursday</td>
+      			 	<td>&nbsp;
+    					<table class="table table1">
+    						<tr>
+    							<th><h3>"""
+    m26 = str(l2[4])
+    m27 = """</h3></th>
+    						</tr>
+    						<tr>
+    							<td>"""
+    m28 = str(ing3[4])
+    m29 = """</td>
+    						</tr>
+    					</table>
+                        <a href="""
+    m30 = "'" + str(link[4]) + "'"
+    m31 = """><strong>View Recipe</strong></a>
+                    </td>
+     			</tr>
+                 <tr>
+      			 	<td>Friday</td>
+      			 	<td>&nbsp;
+    					<table class="table table1">
+    						<tr>
+    							<th><h3>"""
+    m32 = str(l2[5])
+    m33 = """</h3></th>
+    						</tr>
+    						<tr>
+    							<td>"""
+    m34 = str(ing3[5])
+    m35 = """</td>
+    						</tr>
+    					</table>
+                        <a href="""
+    m36 = "'" + str(link[5]) + "'"
+    m37 = """><strong>View Recipe</strong></a>
+                    </td>
+     			</tr>
+                 <tr>
+      			 	<td>Saturday</td>
+      			 	<td>&nbsp;
+    					<table class="table table1">
+    						<tr>
+    							<th><h3>"""
+    m38 = str(l2[6])
+    m39 = """</h3></th>
+    						</tr>
+    						<tr>
+    							<td>"""
+    m40 = str(ing3[6])
+    m41 = """</td>
+    						</tr>
+    					</table>
+                        <a href="""
+    m42 = "'" + str(link[6]) + "'"
+    m43 = """><strong>View Recipe</strong></a>
+                    </td>
+     			</tr>
+    		</table>
+    	</body>
+    </html>"""
+    
+    g = [m1,m2,m3,m4,m5,m6,m7,m8,m9,m10,m11,m12,m13,m14,m15,m16,m17,m18,m19,m20,m21,m22,m23,m24,m25,m26,m27,m28,m29,m30,m31,m32,m33,m34,m35,m36,m37,m38,m39,m40,m41,m42,m43]
+    
+    for i in g:
+        f.write(i)
+    f.close()
+    
+    with open('index_V2.html', 'r') as f: 
+        html_string = f.read()
+    
+    html_string.replace("<a>'","<a>").replace("'</a>","</a>")
+    
+    f = open('index_V2.html','w')
+    f.write(html_string)
+    f.close()
+    
+def email(email1, email2):
+    email_to = [email1, email2]
+    
+    with open('index_V2.html', 'r') as f: 
+            html_string = f.read()
+            
+    new_html = html_string.replace('''<style>
+        			.button {
+        				height: 75px;
+        				width: 150px;  				
+        				background-color: red;
+          				border: none;
+          				color: white;
+          				padding: 20px;
+          				text-align: center;
+          				text-decoration: none;
+          				display: inline-block;
+          				font-size: 16px;
+          				margin: 4px 4px;
+        				}
+        		</style>')''','')
+    
+    username = "montepythonscript@gmail.com"
+    password = "iqvgjvcgiizjsjfp"
+    smtp_server = "smtp.gmail.com:587"
+    email_from = "montepythonscript@gmail.com"
+    
+    msg = MIMEMultipart('alternative')
+    msg['Subject'] = "This Week's Meal Plan"
+    msg['From'] = email_from
+    msg['To'] = ", ".join(email_to)
+    html = MIMEText(new_html, 'html')
+    msg.attach(html)
+    
+    # Attachements
+    filename = "Grocery_List.csv"
+    attachment = open("Grocery_List.csv", "rb")
+    #htmlname = "index_V2.html"
+    #attachment2 = open("index_V2.html", "rb")
+      
+    # instance of MIMEBase and named as p
+    p = MIMEBase('application', 'octet-stream')
+    #q = MIMEBase('application', 'octet-stream')
+    
+    # To change the payload into encoded form
+    p.set_payload((attachment).read())
+    #q.set_payload((attachment2).read())
+    
+    # encode into base64
+    encoders.encode_base64(p)
+    #encoders.encode_base64(q)
+       
+    p.add_header('Content-Disposition', "attachment; filename= %s" % filename)
+    #q.add_header('Content-Disposition', "attachment; filename= %s" % htmlname)  
+    # attach the instance 'p' to instance 'msg'
+    msg.attach(p)
+    #msg.attach(q)
+    
+    server = smtplib.SMTP(smtp_server)
+    server.starttls()
+    server.login(username, password)
+    server.sendmail(email_from, email_to, msg.as_string())
+    server.quit()    
+    
 def update():
     url = 'https://www.makegoodfood.ca/en/recipes'
     res = requests.get(url)
@@ -195,112 +501,33 @@ app = Flask(__name__)
 
 @app.route('/')
 def my_form():
-    return render_template('Home.html')
+    return render_template('Home_V2.html')
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/', methods=['POST'])
 def my_form_post():
-    if request.method == 'POST':
-        if request.form['sun'] == 'Vegetarian':
-            sun = 'veg'
-        else:
-            sun = request.form['sun']
-        if request.form['mon'] == 'Vegetarian':
-            mon = 'veg'
-        else:
-            mon = request.form['mon']
-        if request.form['tue'] == 'Vegetarian':
-            tue = 'veg'
-        else:
-            tue = request.form['tue']
-        if request.form['wed'] == 'Vegetarian':
-            wed = 'veg'
-        else:
-            wed = request.form['wed']
-        if request.form['thu'] == 'Vegetarian':
-            thu = 'veg'
-        else:
-            thu = request.form['thu']
-        if request.form['fri'] == 'Vegetarian':
-            fri = 'veg'
-        else:
-            fri = request.form['fri']
-        if request.form['sat'] == 'Vegetarian':
-            sat = 'veg'
-        else:
-            sat = request.form['sat']
+    sun = request.form['sun']
+    mon = request.form['mon']
+    tue = request.form['tue']
+    wed = request.form['wed']
+    thu = request.form['thu']
+    fri = request.form['fri']
+    sat = request.form['sat']
+    
+    email1 = request.form['email1']
+    email2 = request.form['email2']
+    
+    generatePlan(sun,mon,tue,wed,thu,fri,sat)
+    
+    email(email1, email2)
+    
+    if email2 == "":
+        processed_text = 'An email has been sent to ' + email1
+    else:    
+        processed_text = 'An email has been sent to ' + email1 + ' & ' + email2
+    
+    return processed_text
 
-        sun = sun.lower()
-        mon = mon.lower()
-        tue = tue.lower()
-        wed = wed.lower()
-        thu = thu.lower()
-        fri = fri.lower()
-        sat = sat.lower()    
-        
-        recipes = pd.read_excel("recipe_archive.xlsx")
-        Protein = []
-        for i in recipes.Protien:
-            if i == 'pancetta':
-                Protein.append('pork')
-            elif i in ['haddock','salmon','shrimp','cod']:
-                Protein.append('fish')
-            elif i == 'vegetarian':
-                Protein.append('veg')
-            else:
-                Protein.append(i)
-        recipes['Protein'] = Protein
-        l1 = [sun,mon,tue,wed,thu,fri,sat]
-        l2 = []
-        for i in range(7):
-            j = l1[i]
-            if l1[i] == 'i do not need a recipe for this day':
-                l2.append('You have not requested a recipe for today.')
-            else:
-                l2.append(random.choice(list(recipes[recipes['Protein'] == j]['Recipe'])))
-
-        ing2 = []
-        link = []
-        for i in l2:
-            if i == 'You have not requested a recipe for today.':
-                k = ""
-                l = ""
-            else:
-                j = (list(recipes['Recipe']).index(i))
-                k = recipes.Link[j]
-                l = recipes.Ingredients[j].replace("[",'').replace("]",'').replace("'","").split(", ")
-                for p in l:
-                    if ' spice' in p:
-                        n = (l.index(p))
-                        l = l[:n]
-                    else:
-                        l = l
-            link.append(k)
-            ing2.append(l)
-            
-            ing3 = []
-            for i in ing2:
-                ing3.append(str(i).replace("['","").replace("']","<br>").replace("', '","<br>"))
-            
-        ing4 = []
-        for i in ing2:
-            for j in i:
-                ing4.append(j)
-        
-        ing4 = pd.DataFrame({'Ingredients':ing4})
-        
-        update()
-        
-        return render_template('index.html', 
-            sun_meal = str(l2[0]), sun_ing = str(ing3[0]), sun_link = str(link[0]), 
-            mon_meal = str(l2[1]), mon_ing = str(ing3[1]), mon_link = str(link[1]),
-            tue_meal = str(l2[2]), tue_ing = str(ing3[2]), tue_link = str(link[2]),
-            wed_meal = str(l2[3]), wed_ing = str(ing3[3]), wed_link = str(link[3]),
-            thu_meal = str(l2[4]), thu_ing = str(ing3[4]), thu_link = str(link[4]), 
-            fri_meal = str(l2[5]), fri_ing = str(ing3[5]), fri_link = str(link[5]), 
-            sat_meal = str(l2[6]), sat_ing = str(ing3[6]), sat_link = str(link[6]))
-        
-    else:
-        return 'Error'
+    update()
     
 if __name__ == '__main__':
   app.run(debug=True) 
