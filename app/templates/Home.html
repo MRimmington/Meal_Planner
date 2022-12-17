@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<style>
+h3{
+    padding: 0px;
+    margin: 0px;
+}
+input[type=submit] {
+  width: 100%;
+  background-color: red;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 24px;
+}
+</style>
+<body>
+
+<h2>Select your protein type for each day</h2>
+
+<p><b>Instructions: </b>Select the protein base you would like for your meal for each day this week. If you don't need a recipe for any days, select "I don't need a recipe for this day" in the drop down.</p>
+
+
+<div>
+	<h3>Sunday</h3>
+	<form method="POST">
+  <input list="protein" name="sun" size="30">
+  <datalist id="protein">
+    <option value="Chicken">
+    <option value="Pork">
+    <option value="Beef">
+    <option value="Lamb">
+    <option value="Fish">
+    <option value="Vegetarian">
+    <option value="I do not need a recipe for this day">
+  </datalist>
+
+	<h3>Monday</h3>
+  <input list="protein" name="mon" size="30">
+
+	<h3>Tuesday</h3>
+  <input list="protein" name="tue" size="30">
+
+	<h3>Wednesday</h3>
+  <input list="protein" name="wed" size="30">
+  
+	<h3>Thursday</h3>
+  <input list="protein" name="thu" size="30">
+  
+	<h3>Friday</h3>
+  <input list="protein" name="fri" size="30">
+	
+	<h3>Saturday</h3>
+  <input list="protein" name="sat" size="30">
+  
+    <input type="submit" value="Submit">
+  </form>
+</div>
+
+
+</body>
+</html>
